@@ -190,8 +190,8 @@ Or while you hear that PRC's blocked gmail:757887477@qq.com
 	Design a way to allow generators accept generators as functions
 
 !The functions to be added in
+	dump2container
 	inter(calate/sperse)
-	reverse
 	search_in
 	poly
 !The functions to be improved

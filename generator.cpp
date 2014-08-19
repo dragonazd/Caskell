@@ -119,6 +119,8 @@ namespace caskell {
 		return gslice<T>(gen,0,size);
 	}
 
+
+
 	template<typename T,typename F>
 	class gtake_while:public generator<typename T::value_type>{
 		F f;
