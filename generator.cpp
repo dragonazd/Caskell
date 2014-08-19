@@ -119,7 +119,30 @@ namespace caskell {
 		return gslice<T>(gen,0,size);
 	}
 
-
+	template<typename T>
+	class greverse:public generator<typename T::value_type>{
+		std::list<typename T::value_type> l;//actually a stack
+		public:
+		greverse(T gen){
+			while(!gen.is_end()){
+				l.push_back(*gen);
+				++gen;
+			}
+		}
+		void skip(){
+			l.pop_back();
+		}
+		const typename T::value_type& operator *(){
+			return l.back();
+		}
+		bool is_end(){
+			return l.empty();
+		}
+	};
+	template<typename T>
+	greverse<T>reverse(T gen){
+		return greverse<T>(gen);
+	}
 
 	template<typename T,typename F>
 	class gtake_while:public generator<typename T::value_type>{
