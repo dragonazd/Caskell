@@ -327,7 +327,7 @@ namespace caskell {
 	}
 	//TODO: later should implement a `concat` that can surport multi generators
 
-	template<typename T,typename F,typename ReturnType=typename T::value_type >
+	template<typename T,typename F,typename ReturnType=typename F::value_type >
 	class gmapf:public generator<ReturnType >/*actually, since a infinite generator never end, it could handle infinite generator as well*/{
 		//This class will not check the boundary condition for efficiency
 		//pass it to the former level of generator
@@ -363,7 +363,7 @@ namespace caskell {
 			return g.is_end();
 		}
 	};
-	template<typename T,typename F,typename ReturnType=typename T::value_type >
+	template<typename T,typename F,typename ReturnType=typename F::value_type >
 	gmapf<T,F,ReturnType >mapf(T gen,F func){
 		return gmapf<T,F,ReturnType >(gen,func);
 	}
@@ -461,6 +461,7 @@ namespace caskell {
 	class gzip/*funny name*/:public generator<std::pair<typename T1::value_type,typename T2::value_type> >{
 		T1 g1;
 		T2 g2;
+		//std::pair<typename T1::value_type,typename T2::value_type> ans;
 		public:
 		gzip(T1 gen1,T2 gen2):
 			g1(gen1),g2(gen2){

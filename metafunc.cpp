@@ -25,6 +25,23 @@ namespace caskell {
 		return fcurry<T,F >(func,fix_arg);
 	}
 
+	template<typename F >
+	class funpair:public func<typename F::value_type >{
+		F f;
+		public:
+		funpair(F func) :
+				f(func){
+		}
+		template<typename T >
+		typename F::value_type operator()(std::pair<T,T > p){
+			return f(p.first,p.second);
+		}
+	};
+	template<typename F >
+	funpair<F >unpair(F func){
+		return funpair<F >(func);
+	}
+
 	template<typename T >
 	typename T::value_type head(T gen){
 		return *gen; //imminent problem:the generator may have already reached the end
@@ -100,8 +117,8 @@ namespace caskell {
 	class linear{
 		double a,b;
 		public:
-		linear(double slope,double offset):
-			a(slope),b(offset){
+		linear(double slope,double offset) :
+				a(slope), b(offset){
 		}
 		double operator ()(double x){
 			return a*x+b;
