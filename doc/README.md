@@ -182,7 +182,7 @@ Or while you hear that PRC's blocked gmail:757887477@qq.com
 #3.How to extend this library
 
 !TODO:
-
+Contemplate about "no side effect"
 !General
 	Improve function combination
 
@@ -201,4 +201,3 @@ Or while you hear that PRC's blocked gmail:757887477@qq.com
 	slice:use a queue to make it not neccesary to generate the whole list in some cases
 
 !The function to be deleted
-	tail:to be replaced by improved `slice`
