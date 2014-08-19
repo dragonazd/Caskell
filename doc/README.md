@@ -184,10 +184,7 @@ Or while you hear that PRC's blocked gmail:757887477@qq.com
 !TODO:
 
 !General
-	Identify those designated_func
 	Improve function combination
-	Let function surpport pair
-	Design a way to allow generators accept generators as functions
 
 !The functions to be added in
 	dump2container

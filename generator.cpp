@@ -42,6 +42,13 @@ namespace caskell {
 		const T* operator->(){
 			return &(this->operator *());
 		}
+		template<typename ...Args>
+		T operator ()(Args...){
+			T tmp=this->operator *();
+			++(*this);
+			return tmp;
+		}
+
 		template<typename U>
 		void conv2container(U start,U end){
 			while(start!=end){
@@ -49,16 +56,6 @@ namespace caskell {
 				skip();
 				++start;
 			}
-		}
-	};
-
-	template<typename ReturnType=bool>
-	struct designated_func:public generator<ReturnType>{
-		template<typename ...Args>
-		const ReturnType operator ()(Args...){
-			ReturnType tmp=this->operator *();
-			++(*this);
-			return tmp;
 		}
 	};
 
@@ -121,7 +118,7 @@ namespace caskell {
 
 	template<typename T>
 	class greverse:public generator<typename T::value_type>{
-		std::list<typename T::value_type> l;//actually a stack
+		std::list<typename T::value_type> l; //actually a stack
 		public:
 		greverse(T gen){
 			while(!gen.is_end()){
@@ -233,7 +230,7 @@ namespace caskell {
 	}
 
 	template<typename T>
-	class fn_n_switch:public designated_func<T>{
+	class fn_n_switch:public func<T>{
 		int n1,n2;
 		T v1,v2;
 		int count;
