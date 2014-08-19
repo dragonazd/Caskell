@@ -19,6 +19,3 @@
 *.exe
 *.out
 *.app
-
-# Test file
-test.cpp
