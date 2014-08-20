@@ -187,9 +187,7 @@ Contemplate about "no side effect"
 	Improve function combination
 
 !The functions to be added in
-	dump2container
 	inter(calate/sperse)
-	search_in
 	poly
 !The functions to be improved
 
@@ -197,7 +195,5 @@ Contemplate about "no side effect"
 	curry: dito
 	n_n_switch: dito
 	zip: dito
-
-	slice:use a queue to make it not neccesary to generate the whole list in some cases
 
 !The function to be deleted

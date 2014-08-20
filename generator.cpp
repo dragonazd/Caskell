@@ -548,6 +548,17 @@ namespace caskell {
 		return gwrap<__iter_base_wrap<It>,It>(start,end_);
 	}
 
+	template<typename T>
+	int search_in(T gen,typename T::value_type val){
+		int result=0;
+		while(!(gen.is_end() || (*gen)==val)){
+			++gen;
+			++result;
+		}
+		if(gen.is_end())
+			return -1;
+		return result;
+	}
 	template<typename T,typename F>
 	class fexecutor{
 		T g;
