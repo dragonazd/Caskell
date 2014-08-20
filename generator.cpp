@@ -550,10 +550,10 @@ namespace caskell {
 		void skip(){
 			++p;
 		}
-		const T& operator *(){
+		const typename T::value_type& operator *(){
 			return *p;
 		}
-		const T* operator->(){
+		const typename T::value_type* operator->(){
 			return &(*p);
 		}
 		bool is_end(){
