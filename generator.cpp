@@ -49,7 +49,7 @@ namespace caskell {
 		}
 
 		template<typename U>
-		void conv2container(U start,U end){
+		void dump(U start,U end){
 			while(start!=end){
 				*start=this->operator *();
 				skip();
@@ -505,11 +505,11 @@ namespace caskell {
 	}
 
 	template<typename T,typename It=typename T::const_iterator>
-	class gwrapSTL:public generator<typename T::value_type>{
+	class gwrap:public generator<typename T::value_type>{
 		T c;
 		It p;
 		public:
-		gwrapSTL(T con) :
+		gwrap(T con) :
 				c(con){
 			p=c.begin();
 		}
@@ -524,8 +524,8 @@ namespace caskell {
 		}
 	};
 	template<typename T,typename It=typename T::const_iterator>
-	gwrapSTL<T,It>wrapSTL(T con){
-		return gwrapSTL<T,It>(con);
+	gwrap<T,It>wrap(T con){
+		return gwrap<T,It>(con);
 	}
 
 	template<typename T,typename F>
