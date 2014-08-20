@@ -26,9 +26,7 @@ namespace caskell {
 
 		struct clend{
 		} end;
-		bool is_end(){
-			return false;
-		}
+		virtual bool is_end()=0;
 		bool operator==(const clend &_){
 			return is_end();
 		}
@@ -56,14 +54,18 @@ namespace caskell {
 				++start;
 			}
 		}
-//		template<typename U>
-//		void dump(U inserter){
-//			while(!is_end()){
-//				inserter=this->operator *();
-//				skip();
-//			}
-//		}
+		template<typename U>
+		void dump(U inserter){
+			while(!is_end()){
+				*inserter=this->operator *();
+				skip();
+			}
+		}
 	};
+	template<typename T>
+	bool generator<T>::is_end(){
+		return false;
+	}
 
 	template<typename T>
 	class gslice:public generator<typename T::value_type>{
