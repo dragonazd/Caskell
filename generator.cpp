@@ -145,12 +145,12 @@ namespace caskell {
 	}
 
 	template<typename T,typename F>
-	class gtake_while:public generator<typename T::value_type>{
+	class gtakeWhile:public generator<typename T::value_type>{
 		F f;
 		T g;
 		bool end;
 		public:
-		gtake_while(T gen,F func) :
+		gtakeWhile(T gen,F func) :
 				g(gen), f(func), end(false){
 		}
 		void skip(){
@@ -165,8 +165,8 @@ namespace caskell {
 		}
 	};
 	template<typename T,typename F>
-	gtake_while<T,F>take_while(T gen,F func){
-		return gtake_while<T,F>(gen,func);
+	gtakeWhile<T,F>takeWhile(T gen,F func){
+		return gtakeWhile<T,F>(gen,func);
 	}
 
 	template<typename T>
@@ -195,11 +195,11 @@ namespace caskell {
 	}
 
 	template<typename T,typename F>
-	class giter:public generator<T>{
+	class giterate:public generator<T>{
 		T d;
 		F f;
 		public:
-		giter(T data,F func) :
+		giterate(T data,F func) :
 				d(data), f(func){
 		}
 		void skip(){
@@ -210,20 +210,24 @@ namespace caskell {
 		}
 	};
 	template<typename T,typename F>
-	giter<T,F>iter(T data,F func){
-		return giter<T,F>(data,func);
+	giterate<T,F>iterate(T data,F func){
+		return giterate<T,F>(data,func);
 	}
 	template<typename T=int>
-	giter<T,inc<T>>increment(T data=T()){
-		return iter(data,inc<T>());
+	giterate<T,inc<T>>increment(T data=T()){
+		return iterate(data,inc<T>());
 	}
 	template<typename T=int>
-	giter<T,dec<T>>decrement(T data=T()){
-		return iter(data,dec<T>());
+	giterate<T,dec<T>>decrement(T data=T()){
+		return iterate(data,dec<T>());
 	}
 	template<typename T>
-	giter<T,reflect<T>>repeat(T data){
-		return iter(data,reflect<T>());
+	giterate<T,reflect<T>>repeat(T data){
+		return iterate(data,reflect<T>());
+	}
+	template<typename T>
+	gslice<giterate<T,reflect<T>>>replicate(size_t n,T data){
+		return take(n,repeat(data));
 	}
 
 	template<typename T>
@@ -335,17 +339,15 @@ namespace caskell {
 	//TODO: later should implement a `concat` that can surport multi generators
 
 	template<typename T,typename F,typename ReturnType=typename F::value_type>
-	class gmapf:public generator<ReturnType>/*actually, since a infinite generator never end, it could handle infinite generator as well*/{
+	class gmap:public generator<ReturnType>/*actually, since a infinite generator never end, it could handle infinite generator as well*/{
 		//This class will not check the boundary condition for efficiency
-		//pass it to the former level of generator
-		//anyway, an exception is an exception, right? No matter where it's thrown
-		//by the way, the suffix "f" is a brute method to solve the conflict with std::map
+		//simply pass it to the former level of generator
 		T g;
 		ReturnType c;
 		bool dirty;
 		F f;
 		public:
-		gmapf(T gen,F func) :
+		gmap(T gen,F func) :
 				g(gen), f(func){
 			dirty=false;
 			c=f(*g);
@@ -367,8 +369,8 @@ namespace caskell {
 		}
 	};
 	template<typename T,typename F,typename ReturnType=typename F::value_type>
-	gmapf<T,F,ReturnType>mapf(T gen,F func){
-		return gmapf<T,F,ReturnType>(gen,func);
+	gmap<T,F,ReturnType>map(T gen,F func){
+		return gmap<T,F,ReturnType>(gen,func);
 	}
 
 	template<typename T,typename F>
@@ -412,16 +414,16 @@ namespace caskell {
 	}
 
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
-	class gfold:public generator<ReturnType>{
+	class gfoldl:public generator<ReturnType>{
 		F f;
 		T g;
 		ReturnType c;
 		public:
-		gfold(ReturnType first,T gen,F func) :
+		gfoldl(ReturnType first,T gen,F func) :
 				c(first), g(gen), f(func){
 			skip();
 		}
-		gfold(T gen,F func) :
+		gfoldl(T gen,F func) :
 				f(func), g(gen){
 			c=*g;
 			++g;
@@ -438,20 +440,20 @@ namespace caskell {
 		}
 	};
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
-	gfold<T,F,ReturnType>fold(ReturnType first,T gen,F func){
-		return gfold<T,F,ReturnType>(first,gen,func);
+	gfoldl<T,F,ReturnType>foldl(ReturnType first,T gen,F func){
+		return gfoldl<T,F,ReturnType>(first,gen,func);
 	}
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
-	gfold<T,F,ReturnType>fold1(T gen,F func){
-		return gfold<T,F,ReturnType>(gen,func);
+	gfoldl<T,F,ReturnType>foldl1(T gen,F func){
+		return gfoldl<T,F,ReturnType>(gen,func);
 	}
 	template<typename T,typename ReturnType=typename T::value_type>
-	gfold<T,add<ReturnType>,ReturnType>sum(T gen,ReturnType identity=0){
-		return gfold<T,add<ReturnType>,ReturnType>(identity,gen,add<ReturnType>());
+	gfoldl<T,add<ReturnType>,ReturnType>sum(T gen,ReturnType identity=0){
+		return gfoldl<T,add<ReturnType>,ReturnType>(identity,gen,add<ReturnType>());
 	}
 	template<typename T,typename ReturnType=typename T::value_type>
-	gfold<T,multi<ReturnType>,ReturnType>product(T gen,ReturnType identity=1){
-		return gfold<T,multi<ReturnType>,ReturnType>(identity,gen,multi<ReturnType>());
+	gfoldl<T,multi<ReturnType>,ReturnType>product(T gen,ReturnType identity=1){
+		return gfoldl<T,multi<ReturnType>,ReturnType>(identity,gen,multi<ReturnType>());
 	}
 
 	template<typename T1,typename T2>
@@ -480,37 +482,37 @@ namespace caskell {
 	}
 
 	template<typename T>
-	gfold<T,logic_and,bool>all(T gen){
-		return gfold<T,logic_and,bool>(gen,logic_and(),true);
+	gfoldl<T,logic_and,bool>andf(T gen){
+		return gfoldl<T,logic_and,bool>(gen,logic_and(),true);
 	}
 	template<typename T>
-	gfold<T,logic_and,bool>any(T gen){
-		return gfold<T,logic_or,bool>(gen,logic_and(),false);
+	gfoldl<T,logic_and,bool>orf(T gen){
+		return gfoldl<T,logic_or,bool>(gen,logic_and(),false);
 	}
 
 	template<typename T>
-	gfold<T,bigger<typename T::value_type>,typename T::value_type>max(T gen){
-		return fold1(gen,bigger<typename T::value_type>());
+	gfoldl<T,bigger<typename T::value_type>,typename T::value_type>maximum(T gen){
+		return foldl1(gen,bigger<typename T::value_type>());
 	}
 	template<typename T>
-	gfold<T,smaller<typename T::value_type>,typename T::value_type>min(T gen){
-		return fold1(gen,smaller<typename T::value_type>());
+	gfoldl<T,smaller<typename T::value_type>,typename T::value_type>minimum(T gen){
+		return foldl1(gen,smaller<typename T::value_type>());
 	}
 	template<typename T=int>
-	gfold<T,gcd<typename T::value_type>,typename T::value_type>collective_gcd(T gen){
-		return fold1(gen,gcd<typename T::value_type>());
+	gfoldl<T,gcd<typename T::value_type>,typename T::value_type>collective_gcd(T gen){
+		return foldl1(gen,gcd<typename T::value_type>());
 	}
 	template<typename T=int>
-	gfold<T,lcm<typename T::value_type>,typename T::value_type>collective_lcm(T gen){
-		return fold1(gen,lcm<typename T::value_type>());
+	gfoldl<T,lcm<typename T::value_type>,typename T::value_type>collective_lcm(T gen){
+		return foldl1(gen,lcm<typename T::value_type>());
 	}
 	template<typename T>
-	gfold<T,faverage,double>collective_lcm(T gen){
-		return fold1(gen,faverage());
+	gfoldl<T,faverage,double>collective_lcm(T gen){
+		return foldl1(gen,faverage());
 	}
 	template<typename T>
-	gfold<T,faverage,double>collective_lcm(T gen,double val,int count){
-		return fold1(gen,faverage(val,count));
+	gfoldl<T,faverage,double>collective_lcm(T gen,double val,int count){
+		return foldl1(gen,faverage(val,count));
 	}
 
 	template<typename T,typename It=typename T::const_iterator>

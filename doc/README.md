@@ -189,6 +189,10 @@ Contemplate about "no side effect"
 !The functions to be added in
 	inter(calate/sperse)
 	poly
+	(un)foldr(1)
+	all,any
+	splitAt 
+	dropWhile
 !The functions to be improved
 
 	concat: allow multi parameter by parameter pack
