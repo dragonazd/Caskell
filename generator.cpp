@@ -507,11 +507,13 @@ namespace caskell {
 	template<typename T,typename It=typename T::const_iterator>
 	class gwrap:public generator<typename T::value_type>{
 		T c;
-		It p;
+		It p,cend;
 		public:
 		gwrap(T con) :
-				c(con){
-			p=c.begin();
+				c(con), p(c.begin()), cend(con.end()){
+		}
+		gwrap(It start,It end_) :
+				p(start), cend(end_){
 		}
 		void skip(){
 			++p;
@@ -520,12 +522,20 @@ namespace caskell {
 			return *p;
 		}
 		bool is_end(){
-			return p==c.end();
+			return p==cend;
 		}
 	};
 	template<typename T,typename It=typename T::const_iterator>
 	gwrap<T,It>wrap(T con){
 		return gwrap<T,It>(con);
+	}
+	template<typename It>
+	struct __iter_base_wrap{
+		typedef typename It::value_type value_type;
+	};//serves as a type transmition(shrug)
+	template<typename It>
+	gwrap<__iter_base_wrap<It>,It>wrap(It start,It end_){
+		return gwrap<__iter_base_wrap<It>,It>(start,end_);
 	}
 
 	template<typename T,typename F>
