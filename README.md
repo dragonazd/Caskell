@@ -1,7 +1,6 @@
 Caskell
 ======
 Provides all kinds of functinal functions such as map,filter,fold...everything you need to perform functional progarmming
-##CAUTION:Still in development, interfaces may change
 ###A demo
     #include "caskell.cpp"
     using namespace caskell;
