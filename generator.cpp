@@ -256,7 +256,7 @@ namespace caskell {
 	}
 	//TODO:improve it to receive multi pairs of times and value
 
-	template<typename T,typename F=inc<T>,typename cmpF=inc<T>>
+	template<typename T,typename F,typename cmpF>
 	class grange:public generator<T>{
 		T cur,e;
 		F f;
@@ -275,11 +275,11 @@ namespace caskell {
 			return !cmp(cur,e);
 		}
 	};
-	template<typename T,typename F=inc<T>,typename cmpF=less_equal_than<T>>
+	template<typename T,typename F=inc<T>,typename cmpF=less_than<T>>
 	grange<T,F,cmpF>range(T begin,T end,F func=inc<T>(),cmpF cmpf=cmpF()){
 		return grange<T,F,cmpF>(begin,end,func,cmpf);
 	}
-	template<typename T,typename F=inc<T>,typename cmpF=less_equal_than<T>>
+	template<typename T,typename F=inc<T>,typename cmpF=less_than<T>>
 	grange<T,F,cmpF>range(T end,F func=inc<T>(),cmpF cmpf=cmpF()){
 		return grange<T,F,cmpF>(T(),end,func,cmpf);
 	}
