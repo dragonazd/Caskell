@@ -50,12 +50,19 @@ namespace caskell {
 
 		template<typename U>
 		void dump(U start,U end){
-			while(start!=end){
+			while(start!=end && !is_end()){
 				*start=this->operator *();
 				skip();
 				++start;
 			}
 		}
+//		template<typename U>
+//		void dump(U inserter){
+//			while(!is_end()){
+//				inserter=this->operator *();
+//				skip();
+//			}
+//		}
 	};
 
 	template<typename T>
