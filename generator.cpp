@@ -515,9 +515,10 @@ namespace caskell {
 	class gwrap:public generator<typename T::value_type>{
 		T c;
 		It p,cend;
+		bool end;
 		public:
 		gwrap(T con) :
-				c(con), p(c.begin()), cend(con.end()){
+				c(con), p(c.begin()), cend(c.end()),end(false){
 		}
 		gwrap(It start,It end_) :
 				p(start), cend(end_){
@@ -529,7 +530,7 @@ namespace caskell {
 			return *p;
 		}
 		bool is_end(){
-			return p==cend;
+			return end||(end=(p==cend));
 		}
 	};
 	template<typename T,typename It=typename T::const_iterator>
