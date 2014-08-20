@@ -10,7 +10,6 @@
  struct generator{
  void skip()
  const T& operator *()
- const T* operator-> ()
  //for enumeratable
  bool is_end()
  };
@@ -98,11 +97,6 @@ namespace caskell {
 				return l.front();
 			else return g.operator *();
 		}
-		const typename T::value_type* operator->(){
-			if(backward)
-				return &l.front();
-			else return g.operator ->();
-		}
 		bool is_end(){
 			return (backward?l.empty():g.is_end())||!(s<e);
 		}
@@ -182,9 +176,6 @@ namespace caskell {
 		const typename T::value_type& operator *(){
 			return (*g);
 		}
-		const typename T::value_type* operator->(){
-			return g.operator->();
-		}
 		bool is_end(){
 			return g.is_end();
 		}
@@ -207,9 +198,6 @@ namespace caskell {
 		}
 		const T& operator *(){
 			return d;
-		}
-		const T* operator->(){
-			return &d;
 		}
 	};
 	template<typename T,typename F>
@@ -252,9 +240,6 @@ namespace caskell {
 				return v1;
 			}
 		}
-		const T* operator->(){
-			return &(*(*this));
-		}
 	};
 	template<typename T>
 	fn_n_switch<T>n_n_switch(T a,int ca,T b,int cb){
@@ -276,9 +261,6 @@ namespace caskell {
 		}
 		const T& operator *(){
 			return cur;
-		}
-		const T* operator->(){
-			return &cur;
 		}
 		bool is_end(){
 			return !cmp(cur,e);
@@ -307,9 +289,6 @@ namespace caskell {
 		const typename T::value_type& operator *(){
 			return *g;
 		}
-		const typename T::value_type* operator->(){
-			return g.operator->();
-		}
 	};
 	template<typename T>
 	gcircle<T>circle(T gen=T()){
@@ -335,9 +314,6 @@ namespace caskell {
 		}
 		const typename T1::value_type& operator *(){
 			return switched?*g2:*g1;
-		}
-		const typename T1::value_type* operator->(){
-			return switched?g2.operator->():g1.operator->();
 		}
 		bool is_end(){
 			return g1.is_end()&&g2.is_end();
@@ -376,10 +352,6 @@ namespace caskell {
 				return c;
 			}
 			else return c;
-		}
-
-		const ReturnType* operator->(){
-			return &c;
 		}
 		bool is_end(){
 			return g.is_end();
@@ -421,9 +393,6 @@ namespace caskell {
 		const typename T::value_type& operator *(){
 			return c;
 		}
-		const typename T::value_type* operator->(){
-			return &c;
-		}
 		bool is_end(){
 			return g.is_end();
 		}
@@ -450,9 +419,6 @@ namespace caskell {
 		}
 		const ReturnType& operator *(){
 			return c;
-		}
-		const ReturnType* operator->(){
-			return &c;
 		}
 		void skip(){
 			c=f(c,*g);
@@ -552,9 +518,6 @@ namespace caskell {
 		}
 		const typename T::value_type& operator *(){
 			return *p;
-		}
-		const typename T::value_type* operator->(){
-			return &(*p);
 		}
 		bool is_end(){
 			return p==c.end();
