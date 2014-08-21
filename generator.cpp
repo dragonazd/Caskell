@@ -200,8 +200,12 @@ namespace caskell {
 		}
 	};
 	template<typename T>
-	ginit<T> init(T gen){
-		return ginit<T>(1,gen);
+	ginit<T>dropSuffix(size_t n,T gen){
+		return ginit<T>(n,gen);
+	}
+	template<typename T>
+	ginit<T>init(T gen){
+		return dropSuffix(1,gen);
 	}
 
 	template<typename T>
@@ -213,6 +217,11 @@ namespace caskell {
 	template<typename T>
 	T tail(T gen){
 		return drop(1,gen);
+	}
+
+	template<typename T>
+	std::pair<gslice<T>,T>splitAt(size_t n,T gen){
+		return std::make_pair(take(n,gen),drop(n,gen));
 	}
 
 	template<typename T,typename F>
@@ -438,16 +447,16 @@ namespace caskell {
 	}
 
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
-	class gfoldl:public generator<ReturnType>{
+	class gscanl:public generator<ReturnType>{
 		F f;
 		T g;
 		ReturnType c;
 		public:
-		gfoldl(F func,ReturnType first,T gen) :
+		gscanl(F func,ReturnType first,T gen) :
 				c(first), g(gen), f(func){
 			skip();
 		}
-		gfoldl(F func,T gen) :
+		gscanl(F func,T gen) :
 				f(func), g(gen){
 			c=*g;
 			++g;
@@ -464,28 +473,45 @@ namespace caskell {
 		}
 	};
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
-	gfoldl<T,F,ReturnType>foldl(F func,ReturnType first,T gen){
-		return gfoldl<T,F,ReturnType>(func,first,gen);
+	gscanl<T,F,ReturnType>scanl(F func,ReturnType first,T gen){
+		return gscanl<T,F,ReturnType>(func,first,gen);
 	}
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
-	gfoldl<T,F,ReturnType>foldl1(F func,T gen){
-		return gfoldl<T,F,ReturnType>(func,gen);
+	gscanl<T,F,ReturnType>scanl1(F func,T gen){
+		return gscanl<T,F,ReturnType>(func,gen);
 	}
 	template<typename T,typename ReturnType=typename T::value_type>
-	gfoldl<T,add<ReturnType>,ReturnType>sum(T gen,ReturnType identity=0){
-		return gfoldl<T,add<ReturnType>,ReturnType>(add<ReturnType>(),identity,gen);
+	gscanl<T,add<ReturnType>,ReturnType>sum(T gen,ReturnType identity=0){
+		return gscanl<T,add<ReturnType>,ReturnType>(add<ReturnType>(),identity,gen);
 	}
 	template<typename T,typename ReturnType=typename T::value_type>
-	gfoldl<T,multi<ReturnType>,ReturnType>product(T gen,ReturnType identity=1){
-		return gfoldl<T,multi<ReturnType>,ReturnType>(multi<ReturnType>(),identity,gen);
+	gscanl<T,multi<ReturnType>,ReturnType>product(T gen,ReturnType identity=1){
+		return gscanl<T,multi<ReturnType>,ReturnType>(multi<ReturnType>(),identity,gen);
 	}
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
-	gfoldl<greverse<T>,F,ReturnType>foldr(F func,ReturnType first,T gen){
-		return foldl(func,first,reverse(gen));
+	gscanl<greverse<T>,F,ReturnType>scanr(F func,ReturnType first,T gen){
+		return scanl(func,first,reverse(gen));
 	}
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
-	gfoldl<greverse<T>,F,ReturnType>foldr1(F func,T gen){
-		return gfoldl<T,F,ReturnType>(func,reverse(gen));
+	gscanl<greverse<T>,F,ReturnType>scanr1(F func,T gen){
+		return gscanl<T,F,ReturnType>(func,reverse(gen));
+	}
+
+	template<typename T,typename F,typename ReturnType=typename T::value_type>
+	typename T::value_type foldl(F func,ReturnType first,T gen){
+		return last(scanl(func,first,gen));
+	}
+	template<typename T,typename F,typename ReturnType=typename T::value_type>
+	typename T::value_type foldl1(F func,T gen){
+		return last(scanl1(func,gen));
+	}
+	template<typename T,typename F,typename ReturnType=typename T::value_type>
+	typename T::value_type foldr(F func,ReturnType first,T gen){
+		return last(scanr(func,first,gen));
+	}
+	template<typename T,typename F,typename ReturnType=typename T::value_type>
+	typename T::value_type foldr1(F func,ReturnType first,T gen){
+		return last(scanr1(func,gen));
 	}
 
 	template<typename T1,typename T2>
@@ -514,82 +540,46 @@ namespace caskell {
 	}
 
 	template<typename T>
-	gfoldl<T,logic_and,bool>andf(T gen){
-		return foldl1(logic_and(),gen);
+	gscanl<T,logic_and,bool>andf(T gen){
+		return scanl1(logic_and(),gen);
 	}
 	template<typename T>
-	gfoldl<T,logic_and,bool>orf(T gen){
-		return foldl(logic_or(),gen);
+	gscanl<T,logic_and,bool>orf(T gen){
+		return scanl(logic_or(),gen);
 	}
 	template<typename T,typename F>
-	gfoldl<gmap<T,F,bool>,logic_and,bool>all(F func,T gen){
-		return foldl1(logic_and(),map(func,gen));
+	gscanl<gmap<T,F,bool>,logic_and,bool>all(F func,T gen){
+		return scanl1(logic_and(),map(func,gen));
 	}
 
 	template<typename T,typename F>
-	gfoldl<gmap<T,F,bool>,logic_and,bool>any(F func,T gen){
-		return foldl1(logic_or(),map(func,gen));
+	gscanl<gmap<T,F,bool>,logic_and,bool>any(F func,T gen){
+		return scanl1(logic_or(),map(func,gen));
 	}
 
 	template<typename T>
-	gfoldl<T,bigger<typename T::value_type>,typename T::value_type>maximum(T gen){
-		return foldl1(bigger<typename T::value_type>(),gen);
+	gscanl<T,bigger<typename T::value_type>,typename T::value_type>maximum(T gen){
+		return scanl1(bigger<typename T::value_type>(),gen);
 	}
 	template<typename T>
-	gfoldl<T,smaller<typename T::value_type>,typename T::value_type>minimum(T gen){
-		return foldl1(smaller<typename T::value_type>(),gen);
+	gscanl<T,smaller<typename T::value_type>,typename T::value_type>minimum(T gen){
+		return scanl1(smaller<typename T::value_type>(),gen);
 	}
 	template<typename T=int>
-	gfoldl<T,gcd<typename T::value_type>,typename T::value_type>collective_gcd(T gen){
-		return foldl1(gcd<typename T::value_type>(),gen);
+	gscanl<T,gcd<typename T::value_type>,typename T::value_type>collective_gcd(T gen){
+		return scanl1(gcd<typename T::value_type>(),gen);
 	}
 	template<typename T=int>
-	gfoldl<T,lcm<typename T::value_type>,typename T::value_type>collective_lcm(T gen){
-		return foldl1(lcm<typename T::value_type>(),gen);
+	gscanl<T,lcm<typename T::value_type>,typename T::value_type>collective_lcm(T gen){
+		return scanl1(lcm<typename T::value_type>(),gen);
 	}
 	template<typename T>
-	gfoldl<T,faverage,double>average(T gen){
-		return foldl1(faverage(),gen);
+	gscanl<T,faverage,double>average(T gen){
+		return scanl1(faverage(),gen);
 	}
 	template<typename T>
-	gfoldl<T,faverage,double>average(T gen,double val,int count){
-		return foldl1(faverage(val,count),gen);
-	}
-
-	template<typename T,typename It=typename T::const_iterator>
-	class gwrap:public generator<typename T::value_type>{
-		T c;
-		It p,cend;
-		bool end;
-		public:
-		gwrap(T con) :
-				c(con), p(c.begin()), cend(c.end()), end(false){
-		}
-		gwrap(It start,It end_) :
-				p(start), cend(end_){
-		}
-		void skip(){
-			++p;
-		}
-		const typename T::value_type& operator *(){
-			return *p;
-		}
-		bool is_end(){
-			return end||(end=(p==cend));
-		}
-	};
-	template<typename T,typename It=typename T::const_iterator>
-	gwrap<T,It>wrap(T con){
-		return gwrap<T,It>(con);
-	}
-	template<typename It>
-	struct __iter_base_wrap{
-		typedef typename It::value_type value_type;
-	};
-	//serves as a type transmition(shrug)
-	template<typename It>
-	gwrap<__iter_base_wrap <It>,It>wrap(It start,It end_){
-		return gwrap<__iter_base_wrap <It>,It>(start,end_);
+	gscanl<T,faverage,double>average(T gen,double val,int count){
+		return scanl1(faverage(val,count),gen);
 	}
 
 	template<typename T>
@@ -639,6 +629,42 @@ namespace caskell {
 	template<typename T>
 	bool null(T gen){
 		return gen.is_end();
+	}
+
+	template<typename T,typename It=typename T::const_iterator>
+	class gwrap:public generator<typename T::value_type>{
+		T c;
+		It p,cend;
+		bool end;
+		public:
+		gwrap(T con) :
+				c(con), p(c.begin()), cend(c.end()), end(false){
+		}
+		gwrap(It start,It end_) :
+				p(start), cend(end_){
+		}
+		void skip(){
+			++p;
+		}
+		const typename T::value_type& operator *(){
+			return *p;
+		}
+		bool is_end(){
+			return end||(end=(p==cend));
+		}
+	};
+	template<typename T,typename It=typename T::const_iterator>
+	gwrap<T,It>wrap(T con){
+		return gwrap<T,It>(con);
+	}
+	template<typename It>
+	struct __iter_base_wrap{
+		typedef typename It::value_type value_type;
+	};
+	//serves as a type transmition(shrug)
+	template<typename It>
+	gwrap<__iter_base_wrap <It>,It>wrap(It start,It end_){
+		return gwrap<__iter_base_wrap <It>,It>(start,end_);
 	}
 
 	template<typename T,typename F>
