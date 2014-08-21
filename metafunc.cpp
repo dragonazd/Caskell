@@ -43,20 +43,6 @@ namespace caskell {
 	}
 
 	template<typename T>
-	typename T::value_type head(T gen){
-		return *gen; //imminent problem:the generator may have already reached the end
-	}
-	template<typename T>
-	typename T::value_type last(T gen){
-		typename T::value_type tmp=*gen; //dito
-		do{
-			tmp=*gen;
-			++gen;
-		}while(!gen.is_end());
-		return tmp;
-	}
-
-	template<typename T>
 	struct inc{
 		T operator ()(T x){
 			return ++x;
@@ -109,10 +95,6 @@ namespace caskell {
 			return !f(x);
 		}
 	};
-	template<typename F>
-	fnotf<F>notf(F func){
-		return fnotf<F>(func);
-	}
 
 	class linear{
 		double a,b;
