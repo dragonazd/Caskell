@@ -380,7 +380,7 @@ namespace caskell {
 		bool dirty;
 		F f;
 		public:
-		gmap(T gen,F func) :
+		gmap(F func,T gen) :
 				g(gen), f(func){
 			dirty=false;
 			c=f(*g);
@@ -402,8 +402,8 @@ namespace caskell {
 		}
 	};
 	template<typename T,typename F,typename ReturnType=typename F::value_type>
-	gmap<T,F,ReturnType>map(T gen,F func){
-		return gmap<T,F,ReturnType>(gen,func);
+	gmap<T,F,ReturnType>map(F func,T gen){
+		return gmap<T,F,ReturnType>(func,gen);
 	}
 
 	template<typename T,typename F>

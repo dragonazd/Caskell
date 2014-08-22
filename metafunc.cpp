@@ -6,7 +6,27 @@ namespace caskell {
 		typedef ReturnType value_type;
 		//Moreover, the return value of `operator()` should also be `ReturnType`
 	};
-
+	template<typename F,typename G> //compound function
+	class ffg:public func<typename F::value_type>{
+		F f;
+		G g;
+		public:
+		ffg(F f_,G g_) :
+				f(f_), g(g_){
+		}
+		template<typename T>
+		typename F::value_type operator()(T x){
+			return f(g(x));
+		}
+		template<typename T,typename U>
+		typename F::value_type operator()(T x,U y){
+			return f(g(x,y));
+		}
+	};
+	template<typename F,typename G>
+	ffg<F,G>fg(F f,G g){
+		return ffg<F,G>(f,g);
+	}
 	template<typename T,typename F>
 	class fcurry:public func<typename F::value_type>{
 		T first;
