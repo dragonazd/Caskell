@@ -115,6 +115,10 @@ namespace caskell {
 			return !f(x);
 		}
 	};
+	template<typename F>
+	fnotf<F>notf(F func){
+		return fnotf<F>(func);
+	}
 
 	class linear{
 		double a,b;

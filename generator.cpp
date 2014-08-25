@@ -67,11 +67,6 @@ namespace caskell {
 		return false;
 	}
 
-	template<typename F>
-	fnotf<F>notf(F func){
-		return fnotf<F>(func);
-	}
-
 	template<typename T>
 	class gslice:public generator<typename T::value_type>{
 		T g;
@@ -120,7 +115,7 @@ namespace caskell {
 		return gslice<T>(gen,begin,end);
 	}
 	template<typename T>
-	gslice<T>take(int size,T gen){
+	gslice<T>take(size_t size,T gen){
 		return gslice<T>(gen,0,size);
 	}
 
@@ -215,7 +210,7 @@ namespace caskell {
 	}
 
 	template<typename T>
-	T drop(int skip,T gen){
+	T drop(size_t skip,T gen){
 		for(int i=0;i!=skip;++i)
 			++gen;
 		return gen;
@@ -267,12 +262,12 @@ namespace caskell {
 	}
 
 	template<typename T>
-	class fn_n_switch:public func<T>{
+	class falternation:public func<T>{
 		int n1,n2;
 		T v1,v2;
 		int count;
 		public:
-		fn_n_switch(T a,int ca,T b,int cb) :
+		falternation(T a,int ca,T b,int cb) :
 				v1(a), v2(b), n1(ca), n2(cb){
 			count=1;
 		}
@@ -291,8 +286,8 @@ namespace caskell {
 		}
 	};
 	template<typename T>
-	fn_n_switch<T>n_n_switch(T a,int ca,T b,int cb){
-		return fn_n_switch<T>(a,ca,b,cb);
+	falternation<T>alternation(T a,int ca,T b,int cb){
+		return falternation<T>(a,ca,b,cb);
 	}
 	//TODO:improve it to receive multi pairs of times and value
 
@@ -518,11 +513,11 @@ namespace caskell {
 
 	template<typename T>
 	typename T::value_type sum(T gen,typename T::value_type identity=0){
-		return foldl(add<ReturnType>(),identity,gen);
+		return foldl(add<typename T::value_type>(),identity,gen);
 	}
 	template<typename T>
 	typename T::value_type product(T gen,typename T::value_type identity=1){
-		return foldl(multi<ReturnType>(),identity,gen);
+		return foldl(multi<typename T::value_type>(),identity,gen);
 	}
 	template<typename T1,typename T2>
 	class gzip/*funny name*/:public generator<std::pair<typename T1::value_type,typename T2::value_type>>{
