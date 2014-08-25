@@ -155,7 +155,7 @@ namespace caskell {
 		T g;
 		bool end;
 		public:
-		gtakeWhile(T gen,F func) :
+		gtakeWhile(F func,T gen) :
 				g(gen), f(func), end(false){
 		}
 		void skip(){
@@ -170,8 +170,14 @@ namespace caskell {
 		}
 	};
 	template<typename T,typename F>
-	gtakeWhile<T,F>takeWhile(T gen,F func){
-		return gtakeWhile<T,F>(gen,func);
+	gtakeWhile<T,F>takeWhile(F func,T gen){
+		return gtakeWhile<T,F>(func,gen);
+	}
+	template<typename T,typename F>
+	T dropWhile(F func,T gen){
+		while(func(*gen))
+			++gen;
+		return gen;
 	}
 
 	template<typename T>
@@ -220,7 +226,7 @@ namespace caskell {
 	}
 
 	template<typename T>
-	std::pair<gslice<T>,T>splitAt(size_t n,T gen){
+	std::pair<gslice<T>,T> splitAt(size_t n,T gen){
 		return std::make_pair(take(n,gen),drop(n,gen));
 	}
 
@@ -444,6 +450,10 @@ namespace caskell {
 	template<typename T,typename F>
 	gfilter<T,F>filter(F func,T gen){
 		return gfilter<T,F>(func,gen);
+	}
+	template<typename T,typename F>
+	std::pair<gfilter<T,F>,gfilter<T,fnotf<F>>>partition(F f,T gen){
+		return std::make_pair(filter(gen,f),filter(gen,notf(f)));
 	}
 
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
@@ -672,7 +682,7 @@ namespace caskell {
 		T g;
 		F f;
 		public:
-		fexecutor(T gen,F func) :
+		fexecutor(F func,T gen) :
 				g(gen), f(func){
 		}
 		void exe(){
@@ -694,15 +704,9 @@ namespace caskell {
 			return g.is_end();
 		}
 	};
-
 	template<typename T,typename F>
-	std::pair<gfilter<T,F>,gfilter<T,fnotf<F>>>partition(F f,T gen){
-		return std::make_pair(filter(gen,f),filter(gen,notf(f)));
-	}
-
-	template<typename T,typename F>
-	fexecutor<T,F>executor(T gen,F func){
-		return fexecutor<T,F>(gen,func);
+	fexecutor<T,F>executor(F func,T gen){
+		return fexecutor<T,F>(func,gen);
 	}
 
 	template<typename T,typename Tsep=std::string>
