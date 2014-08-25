@@ -490,14 +490,6 @@ namespace caskell {
 	gscanl<T,F,ReturnType>scanl1(F func,T gen){
 		return gscanl<T,F,ReturnType>(func,gen);
 	}
-	template<typename T,typename ReturnType=typename T::value_type>
-	gscanl<T,add<ReturnType>,ReturnType>sum(T gen,ReturnType identity=0){
-		return gscanl<T,add<ReturnType>,ReturnType>(add<ReturnType>(),identity,gen);
-	}
-	template<typename T,typename ReturnType=typename T::value_type>
-	gscanl<T,multi<ReturnType>,ReturnType>product(T gen,ReturnType identity=1){
-		return gscanl<T,multi<ReturnType>,ReturnType>(multi<ReturnType>(),identity,gen);
-	}
 	template<typename T,typename F,typename ReturnType=typename T::value_type>
 	gscanl<greverse<T>,F,ReturnType>scanr(F func,ReturnType first,T gen){
 		return scanl(func,first,reverse(gen));
@@ -524,6 +516,14 @@ namespace caskell {
 		return last(scanr1(func,gen));
 	}
 
+	template<typename T>
+	typename T::value_type sum(T gen,typename T::value_type identity=0){
+		return foldl(add<ReturnType>(),identity,gen);
+	}
+	template<typename T>
+	typename T::value_type product(T gen,typename T::value_type identity=1){
+		return foldl(multi<ReturnType>(),identity,gen);
+	}
 	template<typename T1,typename T2>
 	class gzip/*funny name*/:public generator<std::pair<typename T1::value_type,typename T2::value_type>>{
 		T1 g1;
@@ -550,46 +550,46 @@ namespace caskell {
 	}
 
 	template<typename T>
-	gscanl<T,logic_and,bool>andf(T gen){
-		return scanl1(logic_and(),gen);
+	bool andf(T gen){
+		return foldl1(logic_and(),gen);
 	}
 	template<typename T>
-	gscanl<T,logic_and,bool>orf(T gen){
-		return scanl(logic_or(),gen);
+	bool orf(T gen){
+		return foldl1(logic_or(),gen);
 	}
 	template<typename T,typename F>
-	gscanl<gmap<T,F,bool>,logic_and,bool>all(F func,T gen){
-		return scanl1(logic_and(),map(func,gen));
+	bool all(F func,T gen){
+		return andf(map(func,gen));
 	}
 
 	template<typename T,typename F>
-	gscanl<gmap<T,F,bool>,logic_and,bool>any(F func,T gen){
-		return scanl1(logic_or(),map(func,gen));
+	bool any(F func,T gen){
+		return orf(map(func,gen));
 	}
 
 	template<typename T>
-	gscanl<T,bigger<typename T::value_type>,typename T::value_type>maximum(T gen){
-		return scanl1(bigger<typename T::value_type>(),gen);
+	typename T::value_type maximum(T gen){
+		return foldl1(bigger<typename T::value_type>(),gen);
 	}
 	template<typename T>
-	gscanl<T,smaller<typename T::value_type>,typename T::value_type>minimum(T gen){
-		return scanl1(smaller<typename T::value_type>(),gen);
-	}
-	template<typename T=int>
-	gscanl<T,gcd<typename T::value_type>,typename T::value_type>collective_gcd(T gen){
-		return scanl1(gcd<typename T::value_type>(),gen);
-	}
-	template<typename T=int>
-	gscanl<T,lcm<typename T::value_type>,typename T::value_type>collective_lcm(T gen){
-		return scanl1(lcm<typename T::value_type>(),gen);
+	typename T::value_type minimum(T gen){
+		return foldl1(smaller<typename T::value_type>(),gen);
 	}
 	template<typename T>
-	gscanl<T,faverage,double>average(T gen){
-		return scanl1(faverage(),gen);
+	int collective_gcd(T gen){
+		return foldl1(gcd<typename T::value_type>(),gen);
 	}
 	template<typename T>
-	gscanl<T,faverage,double>average(T gen,double val,int count){
-		return scanl1(faverage(val,count),gen);
+	int collective_lcm(T gen){
+		return foldl1(lcm<typename T::value_type>(),gen);
+	}
+	template<typename T>
+	double average(T gen){
+		return foldl1(faverage(),gen);
+	}
+	template<typename T>
+	double average(T gen,double val,int count){
+		return foldl1(faverage(val,count),gen);
 	}
 
 	template<typename T>
