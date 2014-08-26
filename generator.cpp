@@ -449,7 +449,7 @@ namespace caskell {
 		return gfilter<T,F>(func,gen);
 	}
 	template<typename T,typename F>
-	std::pair<gfilter<T,F>,gfilter<T,fnotf<F>>>partition(F f,T gen){
+	std::pair<gfilter<T,F>,gfilter<T,ffg<logic_not,F>>>partition(F f,T gen){
 		return std::make_pair(filter(gen,f),filter(gen,notf(f)));
 	}
 
@@ -566,11 +566,11 @@ namespace caskell {
 
 	template<typename T>
 	typename T::value_type maximum(T gen){
-		return foldl1(bigger<typename T::value_type>(),gen);
+		return foldl1(greater_than<typename T::value_type>(),gen);
 	}
 	template<typename T>
 	typename T::value_type minimum(T gen){
-		return foldl1(smaller<typename T::value_type>(),gen);
+		return foldl1(less_than<typename T::value_type>(),gen);
 	}
 	template<typename T>
 	int collective_gcd(T gen){

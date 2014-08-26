@@ -99,27 +99,6 @@ namespace caskell {
 		return fflip<F>(func);
 	}
 
-	template<typename F>
-	class fnotf:public func<bool>{
-		F f;
-		public:
-		fnotf(F func) :
-				f(func){
-		}
-		template<typename T1,typename T2>
-		bool operator ()(T1 a,T2 b){
-			return !f(a,b);
-		}
-		template<typename T>
-		bool operator ()(T x){
-			return !f(x);
-		}
-	};
-	template<typename F>
-	fnotf<F>notf(F func){
-		return fnotf<F>(func);
-	}
-
 	class linear{
 		double a,b;
 		public:
@@ -275,18 +254,10 @@ namespace caskell {
 			return cur=cur+(x-cur)/(++c);
 		}
 	};
-
-	template<typename T>
-	struct bigger:public func<T>{
-		T operator ()(T x,T y){
-			return x<y?y:x;
-		}
-	};
-	template<typename T>
-	struct smaller:public func<T>{
-		T operator ()(T x,T y){
-			return x<y?x:y;
-		}
-	};
+	
+	template<typename F>
+	ffg<logic_not,F>notf(F func){
+		return fg(func);
+	}
 }
 
