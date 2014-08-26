@@ -1,6 +1,7 @@
 Caskell
 ======
 Provides all kinds of functional functions such as map,filter,fold...everything you need to perform functional programming
+**News: r0.1 was recently released! If anyone have tried the lib, I'll be grateful to receive some feedback :-)**
 ###A demo
     #include "caskell.cpp"
     using namespace caskell;
