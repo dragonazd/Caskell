@@ -1,5 +1,7 @@
 #include <list>
 #include <utility>
+#include <cstdlib>//std::size_t
+#include <iostream>//gen_print
 //#include <climits>
 
 #include "metafunc.cpp"
@@ -115,7 +117,7 @@ namespace caskell {
 		return gslice<T>(gen,begin,end);
 	}
 	template<typename T>
-	gslice<T>take(size_t size,T gen){
+	gslice<T>take(std::size_t size,T gen){
 		return gslice<T>(gen,0,size);
 	}
 
@@ -201,7 +203,7 @@ namespace caskell {
 		}
 	};
 	template<typename T>
-	ginit<T>dropSuffix(size_t n,T gen){
+	ginit<T>dropSuffix(std::size_t n,T gen){
 		return ginit<T>(n,gen);
 	}
 	template<typename T>
@@ -210,7 +212,7 @@ namespace caskell {
 	}
 
 	template<typename T>
-	T drop(size_t skip,T gen){
+	T drop(std::size_t skip,T gen){
 		for(int i=0;i!=skip;++i)
 			++gen;
 		return gen;
@@ -221,7 +223,7 @@ namespace caskell {
 	}
 
 	template<typename T>
-	std::pair<gslice<T>,T> splitAt(size_t n,T gen){
+	std::pair<gslice<T>,T> splitAt(std::size_t n,T gen){
 		return std::make_pair(take(n,gen),drop(n,gen));
 	}
 
@@ -257,7 +259,7 @@ namespace caskell {
 		return iterate(reflect<T>(),data);
 	}
 	template<typename T>
-	gslice<giterate<T,reflect<T>>>replicate(size_t n,T data){
+	gslice<giterate<T,reflect<T>>>replicate(std::size_t n,T data){
 		return take(n,repeat(data));
 	}
 
@@ -625,8 +627,8 @@ namespace caskell {
 	}
 
 	template<typename T>
-	size_t length(T gen){
-		size_t ans=0;
+	std::size_t length(T gen){
+		std::size_t ans=0;
 		while(!gen.is_end())
 			++ans;
 		return ans;
