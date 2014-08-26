@@ -99,18 +99,14 @@ Or while you hear that PRC's blocked gmail:757887477@qq.com
 
 
 #3.How to extend this library
-
-!TODO:
-!The functions to be added in
-	inter(calate/sperse)
-	poly
-	(un)foldr(1)
-	(init/tail)s
-!The functions to be improved
-
-	concat: allow multi parameter by parameter pack
-	curry: dito
-	n_n_switch: dito
-	zip: dito
-
-!The function to be deleted
+	Conventionally, in template parameter, generator should be "T", function should be "F"
+	For new generator
+		1)Inherit from class `generator` and implement the functions indicated by the class
+		2)should be named by prefix "g", and implement another "creator" function for convenience
+		3)Reuse pre-existing generators as many as possible
+	For new "utilities" function
+		Reuse pre-existing generators and meta functions as many as possible
+	For new meta function
+		1)Inherit from class `func` and implement the functions indicated by the class
+		2)should be named by prefix "f", and implement another "creator" function for convenience(except the function with no template parameter)
+		3)Reuse pre-existing meta functions as many as possible
