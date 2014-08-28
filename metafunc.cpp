@@ -1,13 +1,12 @@
 #include <utility>
+#include <functional>
 namespace caskell {
-
-	template<typename ReturnType>
+	template<typename Rt>
 	struct func{
-		typedef ReturnType value_type;
-		//Moreover, the return value of `operator()` should also be `ReturnType`
+		typedef Rt result_type;
 	};
 	template<typename F,typename G> //compound function
-	class ffg:public func<typename F::value_type>{
+	class ffg:public func<typename F::result_type>{
 		F f;
 		G g;
 		public:
@@ -15,11 +14,11 @@ namespace caskell {
 				f(f_), g(g_){
 		}
 		template<typename T>
-		typename F::value_type operator()(T x){
+		typename F::result_type operator()(T x){
 			return f(g(x));
 		}
 		template<typename T,typename U>
-		typename F::value_type operator()(T x,U y){
+		typename F::result_type operator()(T x,U y){
 			return f(g(x,y));
 		}
 	};
@@ -28,7 +27,7 @@ namespace caskell {
 		return ffg<F,G>(f,g);
 	}
 	template<typename T,typename F>
-	class fcurry:public func<typename F::value_type>{
+	class fcurry:public func<typename F::result_type>{
 		T first;
 		F f;
 		public:
@@ -36,7 +35,7 @@ namespace caskell {
 				first(first_arg), f(func){
 		}
 		template<typename ...Args>
-		typename F::value_type operator()(Args ...args){
+		typename F::result_type operator()(Args ...args){
 			return f(args...,first);
 		}
 	};
@@ -46,14 +45,14 @@ namespace caskell {
 	}
 
 	template<typename F>
-	class funpair:public func<typename F::value_type>{
+	class funpair:public func<typename F::result_type>{
 		F f;
 		public:
 		funpair(F func) :
 				f(func){
 		}
 		template<typename T>
-		typename F::value_type operator()(std::pair<T,T> p){
+		typename F::result_type operator()(std::pair<T,T> p){
 			return f(p.first,p.second);
 		}
 	};
@@ -63,7 +62,7 @@ namespace caskell {
 	}
 
 	template<typename T>
-	struct inc{
+	struct inc:public func<T>{
 		T operator ()(T x){
 			return ++x;
 		}
@@ -83,14 +82,14 @@ namespace caskell {
 	};
 
 	template<typename F>
-	class fflip:public func<typename F::value_type>{
+	class fflip:public func<typename F::result_type>{
 		F f;
 		public:
 		fflip(F func) :
 				f(func){
 		}
 		template<typename A,typename B>
-		typename F::value_type operator()(A a,B b){
+		typename F::result_type operator()(A a,B b){
 			return f(b,a);
 		}
 	};
@@ -110,101 +109,17 @@ namespace caskell {
 		}
 	};
 
-	//WARNING!!!!!
-	//REALLY REALLY
-	//DULLLLLL
-	//THINGS
-	//BELOW
 	template<typename T>
-	struct equal:public func<bool>{
-		bool operator()(T a,T b){
-			return a==b;
-		}
-	};
-	template<typename T>
-	struct not_equal:public func<bool>{
-		bool operator()(T a,T b){
-			return !(a==b);
-		}
-	};
-
-	struct logic_and:public func<bool>{
-		bool operator ()(bool a,bool b){
-			return a&&b;
-		}
-	};
-	struct logic_or:public func<bool>{
-		bool operator ()(bool a,bool b){
-			return a||b;
-		}
-	};
-	struct logic_not:public func<bool>{
-		bool operator ()(bool a){
-			return !a;
-		}
-	};
-	struct logic_xor:public func<bool>{
-		bool operator ()(bool a,bool b){
-			return !(a==b);
+	struct bigger:public func<T>{
+		T operator()(T a,T b){
+			return a<b?b:a;
 		}
 	};
 
 	template<typename T>
-	struct less_than:public func<bool>{
-		bool operator ()(T a,T b){
-			return a<b;
-		}
-	};
-
-	template<typename T>
-	struct greater_equal_than:public func<bool>{
-		bool operator ()(T a,T b){
-			return !(a<b);
-		}
-	};
-
-	template<typename T>
-	struct greater_than:public func<bool>{
-		bool operator ()(T a,T b){
-			return !(a<b)&&!(a==b);
-		}
-	};
-
-	template<typename T>
-	struct less_equal_than:public func<bool>{
-		bool operator ()(T a,T b){
-			return (a<b)||a==b;
-		}
-	};
-
-	template<typename T>
-	struct add:public func<T>{
-		T operator ()(T x,T y){
-			return x+y;
-		}
-	};
-	template<typename T>
-	struct minus:public func<T>{
-		T operator ()(T x,T y){
-			return x-y;
-		}
-	};
-	template<typename T>
-	struct multi:public func<T>{
-		T operator ()(T x,T y){
-			return x*y;
-		}
-	};
-	template<typename T>
-	struct div:public func<T>{
-		T operator ()(T x,T y){
-			return x/y;
-		}
-	};
-	template<typename T>
-	struct mod:public func<T>{
-		T operator ()(T x,T y){
-			return x%y;
+	struct smaller:public func<T>{
+		T operator()(T a,T b){
+			return a>b?b:a;
 		}
 	};
 
@@ -254,9 +169,9 @@ namespace caskell {
 			return cur=cur+(x-cur)/(++c);
 		}
 	};
-	
+
 	template<typename F>
-	ffg<logic_not,F>notf(F func){
+	ffg<std::logical_not<bool>,F>notf(F func){
 		return fg(func);
 	}
 }
