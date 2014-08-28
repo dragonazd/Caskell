@@ -178,6 +178,15 @@ namespace caskell {
 			++gen;
 		return gen;
 	}
+	template<typename T,typename F>
+	std::pair<gtakeWhile<T,F>,T> span(F func,T gen){
+		return std::make_pair(takeWhile(func,gen),dropWhile(func,gen)); //implementation from hoogle(may has low efficiency)
+	}
+
+	template<typename T,typename F>
+	std::pair<gtakeWhile<T,F>,T> breakf(F func,T gen){
+		return std::make_pair(takeWhile(notf(func),gen),dropWhile(notf(func),gen)); //implementation from hoogle(may has low efficiency)
+	}
 
 	template<typename T>
 	class ginit:public generator<typename T::value_type>{
@@ -598,11 +607,11 @@ namespace caskell {
 
 	template<typename T>
 	typename T::value_type maximum(T gen){
-		return foldl1(bigger<typename T::value_type>(),gen);
+		return foldl1(max<typename T::value_type>(),gen);
 	}
 	template<typename T>
 	typename T::value_type minimum(T gen){
-		return foldl1(smaller<typename T::value_type>(),gen);
+		return foldl1(min<typename T::value_type>(),gen);
 	}
 	template<typename T>
 	int collective_gcd(T gen){

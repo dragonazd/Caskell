@@ -110,14 +110,14 @@ namespace caskell {
 	};
 
 	template<typename T>
-	struct bigger:public func<T>{
+	struct max:public func<T>{
 		T operator()(T a,T b){
 			return a<b?b:a;
 		}
 	};
 
 	template<typename T>
-	struct smaller:public func<T>{
+	struct min:public func<T>{
 		T operator()(T a,T b){
 			return a>b?b:a;
 		}
