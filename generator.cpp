@@ -9,7 +9,6 @@ namespace caskell {
 
 	template<typename T>
 	class generator{
-
 		class iterator{
 			typedef generator<T>agent;
 			agent *pagent;
@@ -700,6 +699,18 @@ namespace caskell {
 			s<<(*gen)<<sep;
 			++gen;
 		}
+	}
+	
+	template<typename A,typename B>
+	bool gen_equal(const A &a,const B &b){
+		A x=a;
+		B y=b;
+		while(x.is_end()==y.is_end() && !x.is_end()){
+			if(*x!=*y)
+				return false;
+			++x;++y;
+		}
+		return x.is_end()==y.is_end();
 	}
 }
 
