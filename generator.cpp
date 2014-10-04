@@ -1,6 +1,6 @@
 #include <list>
 #include <utility>
-#include <cstdlib>//std::size_t
+#include <cstddef>//std::size_t
 #include <iostream>//gen_print
 #include "metafunc.cpp"
 #include "exce.hpp"
@@ -9,25 +9,49 @@ namespace caskell {
 
 	template<typename T>
 	class generator{
+
+		class iterator{
+			typedef generator<T>agent;
+			agent *pagent;
+			bool g;
+			public:
+			iterator(agent *x,bool guard=false) :
+					pagent(x), g(guard){
+			}
+			void operator++(){
+				++(*pagent);
+			}
+			void operator++(int){
+				(*pagent)++;
+			}
+			const T& operator *(){
+				return **pagent;
+			}
+			bool operator!=(const iterator &another){
+				return another.pagent!=this->pagent||!(pagent->is_end());
+			}
+		};
 		public:
 		virtual const T& operator *()=0;
 		virtual void skip()=0;
 
 		typedef T value_type;
 
-		struct __end{
-		};
-		__end end(){
-			return __end();
+		iterator begin(){
+			return iterator(this);
 		}
+		iterator end(){
+			return iterator(this,true);
+		}
+	
 		virtual bool is_end(){
 			return false;
 		}
-		bool operator==(const __end &){
-			return is_end();
+		bool operator==(const generator<T> & another){
+			return this==&another;
 		}
-		bool operator!=(const __end &){
-			return !is_end();
+		bool operator!=(const generator<T> & another){
+			return !(*this==another);
 		}
 		void operator++(){
 			skip();
@@ -38,13 +62,7 @@ namespace caskell {
 		const T* operator->(){
 			return &(this->operator *());
 		}
-		template<typename ...Args>
-		T operator ()(Args...){
-			T tmp=this->operator *();
-			++(*this);
-			return tmp;
-		}
-
+	
 		template<typename U>
 		void dump(U start,U end){
 			while(start!=end&&!is_end()){
@@ -104,9 +122,6 @@ namespace caskell {
 		bool is_end(){
 			return (backward?l.empty():g.is_end())||!(s<e);
 		}
-		gslice &begin(){
-			return *this;
-		}
 	};
 	template<typename T>
 	gslice<T>slice(T gen,int begin,int end){
@@ -136,9 +151,6 @@ namespace caskell {
 		bool is_end(){
 			return l.empty();
 		}
-		greverse &begin(){
-			return *this;
-		}
 	};
 	template<typename T>
 	greverse<T>reverse(T gen){
@@ -163,9 +175,6 @@ namespace caskell {
 		}
 		bool is_end(){
 			return end||(end=!f(*g));
-		}
-		gtakeWhile& begin(){
-			return *this;
 		}
 	};
 	template<typename T,typename F>
@@ -212,9 +221,6 @@ namespace caskell {
 		bool is_end(){
 			return g.is_end();
 		}
-		ginit& begin(){
-			return *this;
-		}
 	};
 	template<typename T>
 	ginit<T>dropSuffix(std::size_t n,T gen){
@@ -254,9 +260,6 @@ namespace caskell {
 		}
 		const T& operator *(){
 			return d;
-		}
-		giterate& begin(){
-			return *this;
 		}
 	};
 	template<typename T,typename F>
@@ -303,9 +306,6 @@ namespace caskell {
 				return v1;
 			}
 		}
-		galternation& begin(){
-			return *this;
-		}
 	};
 	template<typename T>
 	galternation<T>alternation(T a,int ca,T b,int cb){
@@ -331,9 +331,6 @@ namespace caskell {
 		bool is_end(){
 			return !cmp(cur,e);
 		}
-		grange &begin(){
-			return *this;
-		}
 	};
 	template<typename T,typename F=inc<T>,typename cmpF=std::less<T>>
 	grange<T,F,cmpF>range(T begin,T end,F func=inc<T>(),cmpF cmpf=cmpF()){
@@ -357,9 +354,6 @@ namespace caskell {
 		}
 		const typename T::value_type& operator *(){
 			return *g;
-		}
-		gcircle& begin(){
-			return *this;
 		}
 	};
 	template<typename T>
@@ -392,9 +386,6 @@ namespace caskell {
 		}
 		bool is_end(){
 			return g1.is_end()&&g2.is_end();
-		}
-		gconcat& begin(){
-			return *this;
 		}
 	};
 	template<typename T1,typename T2>
@@ -431,9 +422,6 @@ namespace caskell {
 		}
 		bool is_end(){
 			return g.is_end();
-		}
-		gmap& begin(){
-			return *this;
 		}
 	};
 	template<typename T,typename F,typename Rt=typename F::result_type>
@@ -475,9 +463,6 @@ namespace caskell {
 		bool is_end(){
 			return g.is_end();
 		}
-		gfilter& begin(){
-			return *this;
-		}
 	};
 	template<typename T,typename F>
 	gfilter<T,F>filter(F func,T gen){
@@ -512,9 +497,6 @@ namespace caskell {
 		}
 		bool is_end(){
 			return g.is_end();
-		}
-		gscanl& begin(){
-			return *this;
 		}
 	};
 	template<typename T,typename F,typename Rt=typename T::value_type>
@@ -577,9 +559,6 @@ namespace caskell {
 		}
 		bool is_end(){
 			return g1.is_end()||g2.is_end();
-		}
-		gzip& begin(){
-			return *this;
 		}
 	};
 	template<typename T1,typename T2>
@@ -700,9 +679,6 @@ namespace caskell {
 		bool is_end(){
 			return end||(end=(p==cend));
 		}
-		gwrap& begin(){
-			return *this;
-		}
 	};
 	template<typename T,typename It=typename T::const_iterator>
 	gwrap<T,It>wrap(T con){
@@ -718,8 +694,8 @@ namespace caskell {
 		return gwrap<__iter_base_wrap <It>,It>(start,end_);
 	}
 
-	template<typename T,typename Tsep=std::string>
-	void gen_print(T gen,Tsep sep="",std::ostream& s=std::cout){
+	template<typename T,typename Tsep=char*>
+	void gen_print(T gen,Tsep sep=" ",std::ostream& s=std::cout){
 		while(!gen.is_end()){
 			s<<(*gen)<<sep;
 			++gen;
