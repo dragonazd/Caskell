@@ -78,7 +78,11 @@ namespace caskell {
 			}
 		}
 	};
-
+	
+//	template<typename A,typename B>
+//	bool operator ==(A x,B y){
+//	}
+	
 	template<typename T>
 	class gslice:public generator<typename T::value_type>{
 		T g;
