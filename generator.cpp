@@ -1,7 +1,8 @@
 #include <list>
-#include <utility>
+#include <utility>//std::declval
 #include <cstddef>//std::size_t
 #include <iostream>//gen_print
+#include <type_traits>//std::remove_reference
 #include "metafunc.cpp"
 #include "exce.hpp"
 
@@ -661,40 +662,31 @@ namespace caskell {
 		return gen.is_end();
 	}
 
-	template<typename T,typename It=typename T::const_iterator>
-	class gwrap:public generator<typename T::value_type>{
-		T c;
+	template<typename It>
+	class gwrap:public generator<typename std::remove_reference<decltype(*std::declval<It>())>::type>{
 		It p,cend;
-		bool end;
+		bool flag_end;
 		public:
-		gwrap(T con) :
-				c(con), p(c.begin()), cend(c.end()), end(false){
-		}
-		gwrap(It start,It end_) :
-				p(start), cend(end_){
+		gwrap(It start,It end) :
+				p(start), cend(end),flag_end(false){
 		}
 		void skip(){
 			++p;
 		}
-		const typename T::value_type& operator *(){
+		const typename std::remove_reference<decltype(*std::declval<It>())>::type& operator *() {
 			return *p;
 		}
 		bool is_end(){
-			return end||(end=(p==cend));
+			return flag_end||(flag_end=(p==cend));
 		}
 	};
-	template<typename T,typename It=typename T::const_iterator>
-	gwrap<T,It>wrap(T con){
-		return gwrap<T,It>(con);
+	template<typename T>
+	gwrap<typename T::const_iterator>wrap(T con){
+		return gwrap<typename T::const_iterator>(con.begin(),con.end());
 	}
 	template<typename It>
-	struct __iter_base_wrap{
-		typedef typename It::value_type value_type;
-	};
-	//serves as a type transmition(shrug)
-	template<typename It>
-	gwrap<__iter_base_wrap <It>,It>wrap(It start,It end_){
-		return gwrap<__iter_base_wrap <It>,It>(start,end_);
+	gwrap<It>wrap(It start,It end_){
+		return gwrap<It>(start,end_);
 	}
 
 	template<typename T,typename Tsep=char*>
