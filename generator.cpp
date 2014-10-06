@@ -3,6 +3,7 @@
 #include <cstddef>//std::size_t
 #include <iostream>//gen_print
 #include <type_traits>//std::remove_reference
+#include <iterator>
 #include "metafunc.cpp"
 #include "exce.hpp"
 
@@ -680,10 +681,6 @@ namespace caskell {
 			return flag_end||(flag_end=(p==cend));
 		}
 	};
-	template<typename T>
-	gwrap<typename T::const_iterator>wrap(T con){
-		return gwrap<typename T::const_iterator>(con.begin(),con.end());
-	}
 	template<typename It>
 	gwrap<It>wrap(It start,It end_){
 		return gwrap<It>(start,end_);
