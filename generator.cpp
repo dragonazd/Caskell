@@ -706,9 +706,7 @@ namespace caskell {
 	}
 	
 	template<typename A,typename B>
-	bool gen_equal(const A &a,const B &b){
-		A x=a;
-		B y=b;
+	bool gen_equal(A x,B y){
 		while(x.is_end()==y.is_end() && !x.is_end()){
 			if(*x!=*y)
 				return false;
